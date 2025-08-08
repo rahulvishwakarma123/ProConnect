@@ -1,0 +1,90 @@
+POST http://localhost:9080/register HTTP/1.1
+content-type: application/json
+
+# {
+#     "username": "LegendX",
+#     "password": "123123",
+#     "email": "LegendX@gmail.com",
+#     "name": "legend"
+# }
+{
+    "username": "LegendX1",
+    "password": "123123",
+    "email": "LegendX1@gmail.com",
+    "name": "legend1"
+}
+
+
+
+###
+POST http://localhost:9080/login HTTP/1.1
+content-type: application/json
+
+{
+    "password": "123123",
+    "email": "LegendX1@gmail.com"
+}
+
+
+
+###
+GET http://localhost:9080/get_user_and_profile
+Content-Type: application/json
+
+{
+    "token": "09ae4fc9e2eced40fac254ffd0022cfb79ce4a522536b211923dec5bd19da1ab"
+}
+
+
+
+
+###
+POST http://localhost:9080/update_profile_data HTTP/1.1
+content-type: application/json
+
+{
+    "token": "09ae4fc9e2eced40fac254ffd0022cfb79ce4a522536b211923dec5bd19da1ab",
+    "bio": "",
+    "currentPost": "Developer",
+    "pastWork": [
+        {
+            "company": "Microsoft",
+            "position": "Developer",
+            "years": "2+"
+        }
+    ],
+    "education": [
+        {
+            "school": "IIIT",
+            "degree": "B.Tech",
+            "fieldOfStudy": "2015-2019"
+        }
+    ]
+}
+
+
+
+
+
+###
+
+GET http://localhost:9080/get_user_and_profile
+Content-Type: application/json
+
+{
+    "token": "39061699463b20565cbe1b84720c5727595da60d4cf401c214bdb7995a3cf92d"
+}
+
+
+
+
+###
+GET http://localhost:9080/user/get_all_users
+content-type: application/json
+
+
+
+
+###
+GET http://localhost:9080/user/download_profile?id=689486d329c2d2d984ff02b8
+content-type: application/json
