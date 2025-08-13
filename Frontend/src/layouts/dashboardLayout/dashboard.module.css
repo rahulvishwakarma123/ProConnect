@@ -1,0 +1,39 @@
+.homeContainer{
+    display: flex;
+}
+
+.homeContainer > div:nth-child(odd){
+    flex: .2;
+}
+.homeContainer > div:nth-child(even){
+    flex: .6;
+}
+.homeContainer__left{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sidebarOptions{
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    gap: 1rem;
+    width: 80%;
+    min-width: 100px;
+    max-width: 80%;
+    cursor: pointer;
+    transition: all .2s;
+    opacity: .7;
+}
+
+.sidebarOptions:hover{
+    transform: scale(1.03);
+    opacity: 1;
+}
+
+.sidebarOptions svg{
+    height: 1.4rem;
+    min-width: fit-content;
+}
