@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { getAllPosts } from "../../action/postAction"
+import { getAllComments, getAllPosts } from "../../action/postAction"
 import { getAboutUser } from "../../action/authAction"
 
 
@@ -22,11 +22,10 @@ const postSlice = createSlice({
     name: 'post',
     initialState,
     reducers: {
-
-        reset: () => initialState
-    },
-    resetPostId: (state) => {
-        state.postId = ''
+        reset: () => initialState,
+        resetPostId: (state) => {
+            state.postId = ''
+        }
     },
     extraReducers: (builders) => {
         builders
@@ -46,8 +45,14 @@ const postSlice = createSlice({
                 state.isLoading = false
                 state.message = action.payload
             })
+            .addCase(getAllComments.fulfilled, (state, action) =>{
+                state.postId = action.payload.post_id
+                state.comment = action.payload.comments
+            })
             
     }
 })
+
+export const {resetPostId, reset} = postSlice.actions
 
 export default postSlice.reducer

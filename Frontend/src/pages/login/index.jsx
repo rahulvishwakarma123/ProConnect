@@ -28,8 +28,15 @@ const LoginComponent = () => {
   
 
   useEffect(() => {
-    if (authState.loggedIn) {
+    if (authState.loggedIn && localStorage.getItem('token')) {
       router.push('/dashboard')
+    }
+  }, [authState.loggedIn])
+
+  // Auto-switch to login mode after successful registration
+  useEffect(() => {
+    if (authState.isSuccess && !authState.loggedIn) {
+      setuserLoginMethod(true)
     }
   }, [authState.loggedIn])
 
@@ -44,7 +51,6 @@ const LoginComponent = () => {
   }
 
   const handleLogin = (event)=>{
-    console.log("sabki aisi taisi.")
     dispatch(loginUser({email, password}))
   }
 

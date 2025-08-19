@@ -1,0 +1,91 @@
+.container{
+    padding: 1.2rem;
+    background-color:snow;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.backdropContainer{
+    width: 100%;
+    height: 30vh;
+    background: url('https://images.wallpapersden.com/image/download/starry-landscape-4k-cool-blue-moon_bW5tbG6UmZqaraWkpJRobWllrWdma2U.jpg');
+    background-size: cover;   
+    background-repeat: no-repeat;
+    position: relative;
+    border-radius: 20px;
+}
+
+.backdropContainer > img{
+    width: 10em;
+    height: 10em;
+    object-fit: cover;
+    border-radius: 50%;
+    position: absolute;
+    bottom: -30%;
+    left: 8%;
+    text-align: center;
+
+}
+
+
+
+.profileContainer__details{
+    margin-top: 3.6rem;
+}
+
+.card{
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+}
+.card__profileContainer{
+    display: flex;
+}
+
+.card__profileContainer>img{
+    width: 3.4rem;
+    height: 3.4rem;
+    object-fit: cover;
+}
+
+.connectBtn{
+    padding-inline: .8rem;
+    padding-block: .3rem;
+    background-color: rgba(3, 93, 183, 0.905);
+    outline: none;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+
+.connectedBtn{
+    padding-inline: .8rem;
+    padding-block: .3rem;
+    border: 1px solid blue;
+    background-color: rgba(77, 155, 234, 0.905);
+    outline: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    
+}
+
+.workHistoryContainer{
+    display: flex;
+    gap: 1.4rem;
+    padding-top: 1.4rem;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+
+.workHistoryCard{
+    min-width: fit-content;
+    padding-inline: 2.5rem;
+    padding-bottom: 1rem;
+    border-radius: 10px;
+    box-shadow: 10px 10px 15px rgb(173, 173, 173);
+}

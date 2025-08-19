@@ -1,6 +1,6 @@
 
 import { getAboutUser, getAllUsers } from '@/config/redux/action/authAction'
-import { createPost, deletePost, getAllPosts } from '@/config/redux/action/postAction'
+import { createPost, deletePost, getAllComments, getAllPosts, incrementLikes, postComment } from '@/config/redux/action/postAction'
 import DashboardLayout from '@/layouts/dashboardLayout'
 import UserLayout from '@/layouts/userLayouts'
 import { useRouter } from 'next/router'
@@ -9,6 +9,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import s from './dashboard.module.css'
 import { BASE_URL } from '@/config'
+import { resetPostId } from '@/config/redux/reducer/postReducer'
 
 
 
@@ -24,20 +25,19 @@ const Dashboard = () => {
   const [postMeassage, setPostMeassage] = useState('')
   const [fileContent, setFileContent] = useState()
 
+  const [comment, setComment] = useState('')
+
 
   useEffect(() => {
     if (authState.isTokenThere) {
       dispatch(getAllPosts())
       dispatch(getAboutUser({ token: localStorage.getItem('token') }))
     }
-  }, [authState.isTokenThere])
-
-
-  useEffect(() => {
     if (!authState.all_profiles_fetched) {
       dispatch(getAllUsers())
     }
-  }, [])
+  }, [authState.isTokenThere])
+
 
   const handlePost = () => {
     dispatch(createPost({ file: fileContent, body: postMeassage }))
@@ -130,7 +130,10 @@ const Dashboard = () => {
                         <div className={s.optionsContainer}>
 
 
-                          <div className={s.singleOption_optionContainer}>
+                          <div onClick={async () => {
+                            await dispatch(incrementLikes({ token: localStorage.getItem('token'), post_id: post._id }))
+                            await dispatch(getAllPosts())
+                          }} className={s.singleOption_optionContainer}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z" />
                             </svg>
@@ -138,14 +141,12 @@ const Dashboard = () => {
                           </div>
 
 
-                          <div className={s.singleOption_optionContainer}>
+                          <div onClick={async () => {
+                            await dispatch(getAllComments({ post_id: post._id }))
+                          }} className={s.singleOption_optionContainer}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
                             </svg>
-
-                            {/* <p>{post.comments.map((comment) =>{
-                              {comment}
-                            })}</p> */}
                           </div>
 
 
@@ -165,8 +166,71 @@ const Dashboard = () => {
 
             </div>
 
-
           </div>
+
+
+          {/* Comments Container */}
+          {
+            postState.postId !== '' &&
+            <div onClick={async () => {
+              await dispatch(resetPostId())
+            }} className={s.commentsContainer}>
+
+
+              <div onClick={(e) => {
+                e.stopPropagation()
+              }} className={s.allCommentsContainer}>
+
+                {postState.comment.length === 0 && <h2>No Comments Here.</h2>}
+
+
+
+
+                {postState.comment.length !== 0 && <div>
+                  {postState.comment.map((comment, index) => {
+                    return (
+
+
+                      <div className={s.singleComment} key={comment.id}>
+                        <div className="singleComment_profileContainer">
+                          {/* <img src={`${BASE_URL}/${comment.userId.profilePicture}`} alt="comment user profile" /> */}
+                          <div>
+                            <p style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{comment.userId.name}</p>
+                            <p>@{comment.userId.username}</p>
+
+                          </div>
+                        </div>
+                        <p>
+                          {comment.comment}
+                        </p>
+
+
+                      </div>
+                    );
+                  })}
+
+
+
+                </div>}
+
+                <div className={s.postCommentContainer}>
+
+                  <input type="text" placeholder='Write a comment' value={comment} onChange={(e) => {
+                    setComment(e.target.value)
+                  }} />
+                  <div onClick={async () => {
+                    await dispatch(postComment({ post_id: postState.postId, body: comment }))
+                    await dispatch(getAllComments())
+                    setComment('')
+                  }} className={s.postCommentContainer__CommentBtn}>
+                    <p>Comment</p>
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+          }
         </DashboardLayout>
       </UserLayout>
     );

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import s from './dashboard.module.css'
 import { useRouter } from 'next/router'
 import { setTokenThere } from '@/config/redux/reducer/authReducer'
+import { getAllUsers } from '@/config/redux/action/authAction'
 import { useDispatch, useSelector } from 'react-redux'
 const DashboardLayout = ({ children }) => {
 
@@ -10,12 +11,14 @@ const DashboardLayout = ({ children }) => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if(localStorage.getItem('token') === null){
-          router.push('/login')
-        }else{
+        if (localStorage.getItem('token') === null) {
+            router.push('/login')
+        } else {
             dispatch(setTokenThere())
+            dispatch(getAllUsers())
         }
-      }, [])
+
+    }, [])
 
 
     return (
@@ -23,7 +26,7 @@ const DashboardLayout = ({ children }) => {
 
             <div className={s.homeContainer__left}>
 
-                <div onClick={() =>{
+                <div onClick={() => {
                     router.push('/dashboard')
                 }} className={s.sidebarOptions}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -31,7 +34,7 @@ const DashboardLayout = ({ children }) => {
                     </svg>
                     <p>Home</p>
                 </div>
-                <div onClick={() =>{
+                <div onClick={() => {
                     router.push('/discover')
                 }} className={s.sidebarOptions}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -40,7 +43,7 @@ const DashboardLayout = ({ children }) => {
 
                     <p>Discover</p>
                 </div>
-                <div onClick={() =>{
+                <div onClick={() => {
                     router.push('/my_connections')
                 }} className={s.sidebarOptions}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -65,6 +68,13 @@ const DashboardLayout = ({ children }) => {
 
             <div className={s.extraContainer}>
                 <h3>Top Profiles</h3>
+                {authState.all_profiles_fetched && authState.all_users.map((profile)=>{
+                    return (
+                        <div key={profile._id} className={s.extraContainer__profile}>
+                            <p>{profile.userId.name}</p>
+                        </div>
+                    )
+                })}
             </div>
 
 

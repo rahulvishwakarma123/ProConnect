@@ -18,12 +18,12 @@ export const loginUser = createAsyncThunk(
                     message: "Token not found."
                 });
             }
-            
+
             return thunkAPI.fulfillWithValue(response.data.token)
 
         } catch (error) {
             // Handle error response safely
-            return thunkAPI.rejectWithValue(response.data.message );
+            return thunkAPI.rejectWithValue(response.data.message);
         }
     }
 );
@@ -49,10 +49,10 @@ export const registerUser = createAsyncThunk(
 
 export const getAboutUser = createAsyncThunk(
     'user/getAboutUser',
-    async (user, thunkAPI) =>{
+    async (user, thunkAPI) => {
         try {
             const response = await clientServer.get('/get_user_and_profile', {
-                params:{
+                params: {
                     token: user.token
                 }
             })
@@ -68,12 +68,87 @@ export const getAboutUser = createAsyncThunk(
 
 export const getAllUsers = createAsyncThunk(
     'user/getAllUser',
-    async (_, thunkAPI) =>{
+    async (_, thunkAPI) => {
         try {
             const response = await clientServer.get('/user/get_all_users')
             return thunkAPI.fulfillWithValue(response.data)
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data)
+        }
+    }
+)
+
+
+
+
+
+export const sendConnectionRequest = createAsyncThunk(
+    '/user/sendConnectionRequest',
+    async (user, thunkAPI) => {
+        try {
+            const response = await clientServer.post('/user/send_connection_request', {
+                token: user.token,
+                connectionId: user.connectionId
+            })
+            return thunkAPI.fulfillWithValue(response.data)
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data.message)
+        }
+    }
+)
+
+
+export const getConnectionsRequest = createAsyncThunk(
+    '/user/getConnectionsRequest',
+    async (user, thunkAPI) => {
+        try {
+            const response = await clientServer.get('/user/get_connection_requests', {
+                params: {
+                    token: localStorage.getItem('token')
+                }
+            })
+            return thunkAPI.fulfillWithValue(response.data.connection)
+        } catch (error) {
+            console.log(error)
+            return thunkAPI.rejectWithValue(error.response.data.message)
+        }
+    }
+)
+
+
+
+export const getMyConnectionRequests = createAsyncThunk(
+    '/user/getMyConnectionRequests',
+    async (user, thunkAPI) =>{
+        try {
+            const response = await clientServer.get('/user/user_connection_request',{
+                params:{
+                    token: localStorage.getItem('token')
+                }
+            })
+            // Backend returns an array directly
+            return thunkAPI.fulfillWithValue(response.data)
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data.message)
+        }
+    }
+)
+
+
+
+
+export const acceptConnection = createAsyncThunk(
+    '/user/acceptConnection', 
+    async(user, thunkAPI) =>{
+        try {
+            const response = await clientServer.post('/user/accept_connection_request',{
+                token: user.token,
+                requestId: user.connectionId,
+                actionType: user.action
+            })
+            return thunkAPI.fulfillWithValue(response.data)
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data.message)
         }
     }
 )
