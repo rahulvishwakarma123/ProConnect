@@ -39,33 +39,40 @@ const convertUserDataToPDF = async (userData) => {
 
 export const register = async (req, res) => {
     try {
-        const { name, username, email, password } = req.body
+        const { name, username, email, password } = req.body;
+
+        // Check for missing fields
         if (!name || !username || !email || !password) {
-            return res.status(400).json({ message: 'All fields are required.' })
-        }
-        const user = await User.findOne({ email })
-        if (user) {
-            return res.status(400).json({ message: 'User already exist.' })
+            return res.status(400).json({ message: 'All fields are required.' });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exist.' });
+        }
 
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create new user
         const newUser = new User({
             name,
             email,
             password: hashedPassword,
             username
-        })
-        await newUser.save()
+        });
+        await newUser.save();
 
+        // Create associated profile
         const profile = new Profile({
             userId: newUser._id
-        })
-        await profile.save()
+        });
+        await profile.save();
 
-        return res.json({ message: "User created." })
+        return res.json({ message: "User created." });
     } catch (error) {
-        return res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message });
     }
 }
 
@@ -84,13 +91,13 @@ export const login = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
-        return res.status(404).json({ message: 'Invalid credentials' })
+        return res.status(400).json({ message: 'Invalid credentials' })
     }
 
     const token = crypto.randomBytes(32).toString("hex")
     await User.updateOne({ _id: user._id }, { token })
 
-    return res.json({ token })
+    return res.json({ token: token })
 }
 
 
@@ -148,7 +155,7 @@ export const updateUserProfile = async (req, res) => {
 
 export const getUserAndProfile = async (req, res) => {
     try {
-        const { token } = req.body
+        const { token } = req.query
         const user = await User.findOne({ token })
 
         if (!user) {
@@ -156,11 +163,10 @@ export const getUserAndProfile = async (req, res) => {
         }
 
         const userProfile = await Profile.findOne({ userId: user._id })
-            .populate('userId', 'name emai username profilePicture')
+            .populate('userId', 'name email username profilePicture')
 
-        await userProfile.save()
+        return res.json({profile: userProfile})
 
-        return res.json(userProfile)
     } catch (error) {
         return res.status(500).json({ message: error.message })
     }
@@ -261,7 +267,7 @@ export const sendConnectionRequest = async (req, res) => {
 
 export const getMyConnectionRequests = async (req, res) => {
     try {
-        const { token } = req.body
+        const { token } = req.query
         const user = await User.findOne({token})
         if(!user) {
             return res.status(404).json({message : "User not found."})
@@ -279,7 +285,7 @@ export const getMyConnectionRequests = async (req, res) => {
 
 export const whatAreMyConnections = async (req, res) =>{
     try {
-        const {token} = req.body
+        const {token} = req.query
         const user = await User.findOne({token})
         if(!user){
             return res.status(404).json({message: "User not found."})
@@ -317,5 +323,23 @@ export const acceptConnectionRequest = async (req, res) => {
         return res.json({message : 'Request Updated.'})
     } catch (error) {
         return res.status(500).json({message: error.message})
+    }
+}
+
+
+
+export const getUserProfileAndUserBasedOnUsername = async (req, res) =>{
+    try {
+        const {username} = req.query
+        const user = await User.findOne({username})
+        if(!user){
+            return res.status(404).json({message: 'User not found'})
+        }
+        const userProfile = await Profile.findOne({userId: user._id})
+            .populate('userId', 'name email username profilePicture ')
+
+        return res.json({'Profile': userProfile})
+    } catch (error) {
+        return res.status(500).json({message : error.message})
     }
 }

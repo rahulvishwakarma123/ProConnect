@@ -32,7 +32,7 @@ GET http://localhost:9080/get_user_and_profile
 Content-Type: application/json
 
 {
-    "token": "09ae4fc9e2eced40fac254ffd0022cfb79ce4a522536b211923dec5bd19da1ab"
+    "token": "a15627f61cd3a5b25cf6107ff2a01c479699d7735a1b10ca0ebc9dc5edecf741"
 }
 
 
@@ -43,8 +43,8 @@ POST http://localhost:9080/update_profile_data HTTP/1.1
 content-type: application/json
 
 {
-    "token": "09ae4fc9e2eced40fac254ffd0022cfb79ce4a522536b211923dec5bd19da1ab",
-    "bio": "",
+    "token": "55d118d186c496c081b10a94bb3a24f588c28a6ad67436dab22f03cfb5ee0a9d",
+    "bio": "I Love coding.",
     "currentPost": "Developer",
     "pastWork": [
         {

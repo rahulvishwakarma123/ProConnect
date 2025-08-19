@@ -89,12 +89,13 @@ export const commentPost = async (req, res) =>{
             return res.status(404).json({message: 'Post not found.'})
         }
 
-        const comment = new Comment({
+        const commentToPost = new Comment({
             userId: user._id,
             postId: post._id,
             comment: commentBody
         })
         await commentToPost.save();
+        
         return res.json({message: 'Comment added.'})
     } catch (error) {
         return res.status(500).json({message : error.message})
@@ -105,12 +106,16 @@ export const commentPost = async (req, res) =>{
 
 export const getCommentByPost = async (req,res) =>{
     try {
-        const {post_id} = req.body
+        const {post_id} = req.query
         const post = await Post.findOne({_id : post_id})
         if(!post){
             return res.status(404).json({message: 'Post not found.'})
         }
-        return res.json({comments : post.comments})
+        console.log(post._id)
+        const comment = await Comment.find({postId: post._id})
+            .populate('userId', 'username name')
+            
+        return res.json(comment.reverse())
 
     } catch (error) {
         return res.status(500).json({message: error.message})
@@ -152,7 +157,7 @@ export const incrementLikes = async (req, res) =>{
     try {
         const {token, post_id} = req.body
         const user = await User.findOne({token})
-
+        
         if(!user){
             return res.status(404).json({message: 'User not found.'})
         }
