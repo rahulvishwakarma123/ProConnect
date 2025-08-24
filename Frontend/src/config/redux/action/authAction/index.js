@@ -56,7 +56,6 @@ export const getAboutUser = createAsyncThunk(
                     token: user.token
                 }
             })
-
             return thunkAPI.fulfillWithValue(response.data)
 
         } catch (error) {
@@ -109,7 +108,6 @@ export const getConnectionsRequest = createAsyncThunk(
             })
             return thunkAPI.fulfillWithValue(response.data.connection)
         } catch (error) {
-            console.log(error)
             return thunkAPI.rejectWithValue(error.response.data.message)
         }
     }
@@ -126,7 +124,6 @@ export const getMyConnectionRequests = createAsyncThunk(
                     token: localStorage.getItem('token')
                 }
             })
-            // Backend returns an array directly
             return thunkAPI.fulfillWithValue(response.data)
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data.message)
@@ -143,9 +140,11 @@ export const acceptConnection = createAsyncThunk(
         try {
             const response = await clientServer.post('/user/accept_connection_request',{
                 token: user.token,
-                requestId: user.connectionId,
-                actionType: user.action
+                requestId: user.requestId,
+                actionType: user.actionType
             })
+            thunkAPI.dispatch(getConnectionsRequest({token: user.token}))
+            thunkAPI.dispatch(getMyConnectionRequests({token: user.token}))
             return thunkAPI.fulfillWithValue(response.data)
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data.message)

@@ -34,6 +34,14 @@
     margin-top: 3.6rem;
 }
 
+
+.profileContainer__child{
+    display: flex;
+    gap: .7rem;
+}
+
+
+
 .card{
     display: flex;
     align-items: center;
@@ -70,7 +78,6 @@
     color: white;
     border-radius: 10px;
     cursor: pointer;
-    
 }
 
 .workHistoryContainer{
@@ -88,4 +95,24 @@
     padding-bottom: 1rem;
     border-radius: 10px;
     box-shadow: 10px 10px 15px rgb(173, 173, 173);
+}
+
+
+
+
+
+@media only screen and (max-width: 600px){
+    .profileContainer__child{
+        flex-direction: column;
+    }
+    .backdropContainer{
+        height: 20vh;
+    }
+    .backdropContainer > img{
+        height: 5em;
+        width: 5em;
+        left: 10%;
+        bottom: -25%;
+    }
+    
 }

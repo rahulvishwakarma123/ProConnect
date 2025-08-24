@@ -97,3 +97,16 @@
     text-wrap: wrap;
     text-align: center;
 }
+
+
+
+@media only screen and (max-width: 750px){
+    .cardContainer{
+        flex-direction: column;
+    }
+    .inputRow{
+        flex-direction: column;
+        width: 100%;
+        align-items: flex-start;
+    }
+}

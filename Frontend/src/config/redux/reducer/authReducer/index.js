@@ -1,10 +1,11 @@
-import { getAboutUser, getAllUsers, getConnectionsRequest, getMyConnectionRequests, loginUser, registerUser, sendConnectionRequest } from "../../action/authAction"
+import { acceptConnection, getAboutUser, getAllUsers, getConnectionsRequest, getMyConnectionRequests, loginUser, registerUser, sendConnectionRequest } from "../../action/authAction"
 import { createSlice } from "@reduxjs/toolkit"
 
 
 
 const initialState = {
     user: undefined,
+    profileUserId: null,
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -70,13 +71,14 @@ const authSlice = createSlice({
         .addCase(registerUser.rejected, (state, action) =>{
             state.isError = true
             state.isLoading = false
-            state.message = action.payload
+            state.message = { message: action.payload}
         })
         .addCase(getAboutUser.fulfilled, (state, action) =>{
             state.isError = false
             state.isLoading = false
             state.profileFetched = true
             state.user = action.payload.profile
+            state.profileUserId = action.payload.profile.userId._id
         })
         .addCase(getAllUsers.fulfilled, (state, action) =>{
             state.isLoading = false,

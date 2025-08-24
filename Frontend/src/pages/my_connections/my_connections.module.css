@@ -1,0 +1,66 @@
+.myConnections__container{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+.userCard{
+    padding: 1.3rem;
+    width: 95%;
+    display: flex;
+    align-items: center;
+    gap: 1.3rem;
+    box-shadow: 10px 10px 10px rgb(0,0,0,0.1);
+    transition: .2s;
+}
+.userCard:hover{
+    transform: scale(1.01);
+    box-shadow: 10px 10px 10px 5px rgba(0, 0, 0, 0.409);
+}
+.profilePicture>img{
+    width: 4.5rem;
+    border-radius: 50%;
+}
+.myConnections{
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    padding-bottom: 1.5rem;
+    cursor: pointer;
+}
+.acceptBtn{
+    padding-inline: .7rem;
+    padding-block: .2rem;
+    border: 1px solid blue;
+    background-color: rgba(77, 155, 234, 0.905);
+    outline: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+
+
+.cardName{
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+.cardUsername{
+    color: rgb(69, 69, 69);
+}
+
+
+
+
+@media only screen and (max-width: 600px) {
+    .userCard{
+        padding: 1.3rem;
+        width: 95%;
+        display: flex;
+        align-items: center;
+        gap: 1.3rem;
+        box-shadow: 10px 10px 10px rgb(0,0,0,0.1);
+        transition: .2s;
+    }
+}

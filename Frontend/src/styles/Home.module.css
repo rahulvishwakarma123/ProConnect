@@ -45,3 +45,51 @@
     border-radius: 1rem;
     color: white;
 }
+
+
+@media only screen and (max-width: 1200px) {
+    .container{
+        height: auto;
+    }
+    .mainContainer{
+        flex-direction: column;
+        gap: 4rem;
+        padding-inline: 2rem;
+        height: 100%;
+    }
+    
+    .mainContainer__left    {
+        flex: 0.5;
+    }
+    .mainContainer__right{
+        flex: 0.5;
+    }
+
+    .mainContainer__right > img{
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 810px) {
+    .mainContainer__left > p:nth-child(1){
+        font-size: 2rem;
+    
+    }
+    .mainContainer__left > p:nth-child(2){
+        font-size: 1.4rem;
+    }
+}
+@media only screen and (max-width: 500px) {
+    .mainContainer__left > p:nth-child(1){
+        font-size: 1.4rem;
+    
+    }
+    .mainContainer__left > p:nth-child(2){
+        font-size: 1rem;
+    }
+    .buttonJoin{       
+        font-size: 1rem;
+        padding-inline: 1rem;
+        padding-block: .4rem;
+    }
+}

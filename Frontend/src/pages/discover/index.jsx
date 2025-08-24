@@ -26,17 +26,17 @@ const DiscoverPage = () => {
   return (
     <UserLayout>
       <DashboardLayout>
-        <h1>Discover</h1>
+        <p className={s.discoverHeading}>Discover</p>
         <div className={s.allUserProfile}>
           {authState.all_profiles_fetched && authState.all_users.map((user) => {
             return (
-              <div onClick={() =>{
+              <div onClick={() => {
                 router.push(`view_profile/${user.userId.username}`)
               }} key={user.userId._id} className={s.userCard}>
                 <img className={s.userCardImage} src={`${BASE_URL}/${user.userId.profilePicture}`} alt="Profile Picture" />
                 <div>
-                  <h1>{user.userId.name}</h1>
-                  <p>{user.userId.username}</p>
+                  <p className={s.cardName}>{user.userId.name}</p>
+                  <p className={s.cardUsername}>{user.userId.username}</p>
                 </div>
               </div>
             )

@@ -45,9 +45,14 @@ const LoginComponent = () => {
     dispatch(emptyMessage())
   }, [userLoginMethod])
 
-
+  const [required, setRequired] = useState(false)
   const handleRegister = (event) => {
-    dispatch(registerUser({ username, password, email, name }))
+    if(username === '' || password === '' || email === '' || name === ''){
+      setRequired(true)
+    }else{
+      setRequired(false)
+      dispatch(registerUser({ username, password, email, name }))
+    }
   }
 
   const handleLogin = (event)=>{
@@ -63,6 +68,7 @@ const LoginComponent = () => {
 
             <p className={s.cardLeft__heading}>{userLoginMethod ? "Sign in" : "Sign up"}</p>
             <p style={{ color: authState.isError ? 'red' : 'green' }}>{authState.message.message}</p>
+            {required && <p style={{color:'red'}}>All fields are required!</p>}
             <div className={s.inputContainer}>
               {!userLoginMethod && <div className={s.inputRow}>
                 <input onChange={(e) => setUsername(e.target.value)} className={s.inputField} type="text" placeholder='Username' />
@@ -84,6 +90,7 @@ const LoginComponent = () => {
             <p className={s.rightPara}>{!userLoginMethod ? "Already have an account" : "Don't have an account"}</p>
             <button className={s.toggleButton} onClick={() => {
               setuserLoginMethod(!userLoginMethod)
+              setRequired(false)
             }}>{!userLoginMethod ? `Signin` : `Signup`}</button>
 
           </div>

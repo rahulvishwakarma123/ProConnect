@@ -7,7 +7,7 @@ import s from './viewProfile.module.css'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllPosts } from '@/config/redux/action/postAction'
-import { getConnectionsRequest, sendConnectionRequest } from '@/config/redux/action/authAction'
+import { getAboutUser, getConnectionsRequest, getMyConnectionRequests, sendConnectionRequest } from '@/config/redux/action/authAction'
 
 export default function ViewProfilePage({ userProfile }) {
 
@@ -19,16 +19,18 @@ export default function ViewProfilePage({ userProfile }) {
     const searchParams = useSearchParams()
 
 
-
     const [userPost, setUserPost] = useState([])
     const [isCurrentUserInConnection, setIsCurrentUserInConnection] = useState(false)
     const [isConnectionNull, setIsConnectionNull] = useState(true)
 
 
     const getUserPost = async () => {
-        await dispatch(getAllPosts())
+        getAllPosts()
         await dispatch(getConnectionsRequest({ token: localStorage.getItem('token') }))
+        await dispatch(getMyConnectionRequests({ token: localStorage.getItem('token') }))
+        await dispatch(getAboutUser({ token: localStorage.getItem('token') }))
     }
+
 
 
 
@@ -43,25 +45,32 @@ export default function ViewProfilePage({ userProfile }) {
 
 
     useEffect(() => {
-        if (!userProfile || !userProfile.userId) return
+        if (!userProfile || !userProfile.userId || !authState.connectionRequest || !authState.profileUserId) return
 
-        // In ConnectionRequest, userId = sender (current user), connectionId = receiver (profile user)
-        // We fetched connections that the current user SENT, so match by connectionId
-        if (Array.isArray(authState.connections) && authState.connections.length > 0) {
-            const connection = authState.connections.find((conn) => {
-                const receiverId = String(conn.connectionId)
-                const viewedProfileId = String(userProfile.userId._id)
-                return receiverId === viewedProfileId
-            })
+        const connectionArray = authState.connectionRequest?.filter((user) => (user.userId._id == userProfile.userId._id) || (user.connectionId._id == userProfile.userId._id))
+        console.log(connectionArray)
 
-            if (connection) {
-                setIsCurrentUserInConnection(true)
-                if (connection.statusAccepted === true) {
+        const connection = connectionArray.filter((user) => (user.userId._id == authState.profileUserId) || (user.connectionId._id == authState.profileUserId))
+        
+        console.log(connection)
+
+        if(connection.length > 0) {
+            setIsCurrentUserInConnection(true)
+        }else{
+            return
+        }
+
+        connectionArray.map((user) => {
+            if (toString(user.connectionId._id) === toString(authState.profileUserId)) {
+                if (user.statusAccepted) {
                     setIsConnectionNull(false)
+                }else{
+                    setIsConnectionNull(true)
                 }
             }
-        }
-    }, [authState.connections, userProfile])
+        })
+
+    }, [authState.connections, userProfile, authState.connectionRequest, authState.user])
 
 
 
@@ -100,7 +109,7 @@ export default function ViewProfilePage({ userProfile }) {
 
 
                     <div className={s.profileContainer__details}>
-                        <div style={{ display: 'flex', gap: '.7rem' }}>
+                        <div className={s.profileContainer__child}>
 
                             <div style={{ flex: '.8' }}>
 
@@ -110,26 +119,32 @@ export default function ViewProfilePage({ userProfile }) {
 
                                 </div>
 
-                                <div style={{ display: 'flex', alignItems:'center', gap:'1rem'}}>
-                                    {
-                                        isCurrentUserInConnection ?
-                                            <button className={s.connectedBtn}>{isConnectionNull ? "Pending" : "Connected"}</button>
-                                            :
-                                            <button className={s.connectBtn} onClick={async () => {
-                                                console.log('connected.')
-                                                console.log(authState.connections, userProfile.userId._id)
-                                                await dispatch(sendConnectionRequest({ token: localStorage.getItem('token'), connectionId: userProfile.userId._id }))
-                                                await dispatch(getConnectionsRequest({ token: localStorage.getItem('token') }))
-                                            }}>
-                                                Connect
-                                            </button>
-                                    }
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    {(() => {
+                                        const isViewingSelf = authState.user && authState.user.userId && userProfile && userProfile.userId && String(authState.user.userId._id) === String(userProfile.userId._id)
+                                        if (isViewingSelf) {
+                                            return null
+                                        }
+                                        return (
+                                            isCurrentUserInConnection ? (
+                                                <button className={s.connectedBtn}>{isConnectionNull ? "Pending" : "Connected"}</button>
+                                            ) : (
+                                                <button className={s.connectBtn} onClick={async () => {
+                                                    await dispatch(sendConnectionRequest({ token: localStorage.getItem('token'), connectionId: userProfile.userId._id }))
+                                                    await dispatch(getConnectionsRequest({ token: localStorage.getItem('token') }))
+                                                    setIsCurrentUserInConnection(true)
+                                                }}>
+                                                    Connect
+                                                </button>
+                                            )
+                                        )
+                                    })()}
 
-                                    <div onClick={async () =>{
+                                    <div onClick={async () => {
                                         const response = await clientServer.get(`/user/download_profile?id=${userProfile.userId._id}`)
                                         window.open(`${BASE_URL}/${response.data.message}`, '_blank')
                                     }}>
-                                        <svg style={{ width: '1.2rem', cursor:'pointer', paddingBlock:'1rem'}} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                        <svg style={{ width: '1.2rem', cursor: 'pointer', paddingBlock: '1rem' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                         </svg>
 
@@ -201,18 +216,7 @@ export default function ViewProfilePage({ userProfile }) {
 
 
 
-// There are several problems in the code:
-// 1. The function should be named `getServerSideProps` (Next.js convention), not `serverSideProps`.
-// 2. The function should return an object with a `props` key, otherwise Next.js will throw an error.
-// 3. The axios `get` call returns a promise; you should `await` the promise, not `request.data`.
-// 4. The endpoint in your backend is `/user/profile_based_on_username`, not `/user/get_profile_based_on_username`.
-// 5. You should access the data from the response as `response.data` after awaiting the request.
-// 6. You should not use `console.log` for production code in SSR functions, but it's okay for debugging.
-
 export async function getServerSideProps(context) {
-    // For debugging
-    console.log('From view');
-    console.log(context.query.username);
 
     try {
         const response = await clientServer.get('/user/profile_based_on_username', {
