@@ -111,7 +111,6 @@ export const getCommentByPost = async (req,res) =>{
         if(!post){
             return res.status(404).json({message: 'Post not found.'})
         }
-        console.log(post._id)
         const comment = await Comment.find({postId: post._id})
             .populate('userId', 'username name')
             
